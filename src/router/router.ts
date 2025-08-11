@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-// la clase BaseRouter va a actuar como bandera para extender clases, por lo tanto va a trabajar con genericos 
+
 export class BaseRouter<T> { 
     public router: Router
     public controller: T;
@@ -13,3 +13,11 @@ export class BaseRouter<T> {
 
     routes(){}
 }
+
+/*
+BaseRouter es una clase base genérica pensada para ser extendida por routers de distintas entidades (usuarios, productos, etc.).
+Al extenderla, le pasas el controlador correspondiente como parámetro genérico.
+El constructor de BaseRouter crea una instancia de ese controlador y la asigna a this.controller.
+Así, this.controller tendrá todos los métodos definidos en el controlador que le pasaste (por ejemplo, getUser en UserController).
+Luego, en el router específico, puedes usar esos métodos para definir las rutas que necesites.
+*/
