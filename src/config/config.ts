@@ -1,15 +1,17 @@
 import dotenv from 'dotenv';
-import { DataSourceOptions } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export abstract class ConfigServer {
-    constructor(){
+    private static dataSource: DataSource; // 🔹 singleton
+
+    constructor() {
         const nodeNameEnv = this.createPathEnv(this.nodeEnv);
         dotenv.config({ path: nodeNameEnv });
     }
 
     public getEnvironment(k: string): string | undefined {
-        return process.env[k]; //process.env['PORT']
+        return process.env[k];
     }
 
     public getNumberEnv(k: string): number {
@@ -21,14 +23,11 @@ export abstract class ConfigServer {
     }
 
     public createPathEnv(path: string): string {
-        const arrEnv: Array<string> = ['env']
-        
-
+        const arrEnv: Array<string> = ['env'];
         if (path.length > 0) {
             const stringToArray = path.split('.');
             arrEnv.unshift(...stringToArray);
         }
-
         return '.' + arrEnv.join('.');
     }
 
@@ -41,12 +40,19 @@ export abstract class ConfigServer {
             password: this.getEnvironment('DB_PASSWORD') || 'root',
             database: this.getEnvironment('DB_NAME') || 'test',
             entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-            migrations: [__dirname + '/../../migrations/{.ts,.js}'],
+            migrations: [__dirname + '/../../migrations/*{.ts,.js}'],
             synchronize: true,
             logging: false,
             namingStrategy: new SnakeNamingStrategy()
-        }
+        };
     }
 
+    async dbConnect(): Promise<DataSource> {
+        if (!ConfigServer.dataSource) {
+            ConfigServer.dataSource = new DataSource(this.typeORMconfig);
+            await ConfigServer.dataSource.initialize();
+            console.log('Database connected');
+        }
+        return ConfigServer.dataSource;
+    }
 }
-

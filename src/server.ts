@@ -3,7 +3,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { UserRouter } from './user/user.router';
 import { ConfigServer } from './config/config';
-import { DataSource } from 'typeorm';
+
 
 class ServerBootstrap extends ConfigServer{
     public app: express.Application = express(); // Creamos una instancia de express
@@ -27,9 +27,6 @@ class ServerBootstrap extends ConfigServer{
         return [new UserRouter().router];
     };
 
-    async dbConnect(): Promise<DataSource> {
-        return await new DataSource(this.typeORMconfig).initialize();
-    };
 
     public listen() { // para llamar a variables dentro de una clase usamos this
         this.app.listen(this.port, () => {
