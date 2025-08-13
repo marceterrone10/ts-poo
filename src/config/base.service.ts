@@ -4,8 +4,8 @@ import { ConfigServer } from './config';
 export class BaseService<T extends BaseEntity> extends ConfigServer {
     public execRepository: Promise<Repository<T>>;
 
-    constructor(private getEntity: EntityTarget<T>) {
-        super();
+    constructor(private getEntity: EntityTarget<T>) { //le pasamos como parametro la entidad a la cual queremos trabajar
+        super(); // llama a los metodos de config.ts (db.Connect())
         this.execRepository = this.initRepository(getEntity);
     }
 

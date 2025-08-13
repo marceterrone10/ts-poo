@@ -1,22 +1,25 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/user.services';
+import { HttpResponse } from '../../shared/response/http.response';
+import { DeleteResult, UpdateResult } from 'typeorm';
 
 
 export class UserController {
-    constructor(private readonly userService: UserService = new UserService()){
+    constructor(
+        private readonly userService: UserService = new UserService(),
+        private readonly httpResponse: HttpResponse = new HttpResponse()
+    ){}
 
-    }
     async getUser(req: Request, res: Response) {
         try {
             const data = await this.userService.findAllUsers();
-            res.status(200).json({
-                data
-            })
+            if(data.length === 0){
+                return this.httpResponse.NotFound(res, "No users found");
+            }
+            return this.httpResponse.Ok(res, data);
         } catch (error) {
             console.error("Error retrieving user:", error);
-            res.status(500).json({
-                message: "Error retrieving user"
-            });
+            return this.httpResponse.InternalServerError(res, "Error retrieving user");
         }
     }
 
@@ -24,14 +27,13 @@ export class UserController {
         try {
             const { id } = req.params;
             const data = await this.userService.findUserById(id);
-            res.status(200).json({
-                data
-            })
+            if(!data){
+                return this.httpResponse.NotFound(res, "User not found");
+            }
+            return this.httpResponse.Ok(res, data);
         } catch (error) {
             console.error("Error retrieving user:", error);
-            res.status(500).json({
-                message: "Error retrieving user"
-            });
+            return this.httpResponse.InternalServerError(res, "Error retrieving user");
         }
     }
 
@@ -39,14 +41,10 @@ export class UserController {
         try {
             const body = req.body;
             const data = await this.userService.createUser(body);
-            res.status(201).json({
-                "User": data
-            });
+            return this.httpResponse.Ok(res, data);
         } catch (error) {
             console.error("Error retrieving user:", error);
-            res.status(500).json({
-                message: "Error retrieving user"
-            });    
+            return this.httpResponse.InternalServerError(res, "Error retrieving user");
         }
     }
 
@@ -54,30 +52,28 @@ export class UserController {
         try {
             const { id } = req.params;
             const body = req.body;
-            const data = await this.userService.updateUser(id, body);
-            res.status(200).json({
-                "User": data
-            });
+            const data: UpdateResult = await this.userService.updateUser(id, body);
+            if(!data.affected){
+                return this.httpResponse.NotFound(res, "Error updating user");
+            }
+            return this.httpResponse.Ok(res, data);
         } catch (error) {
             console.error("Error updating user:", error);
-            res.status(500).json({
-                message: "Error updating user"
-            });
+            return this.httpResponse.InternalServerError(res, "Error retrieving user");
         }
     }
 
     async deleteUser(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const data = await this.userService.deleteUser(id);
-            res.status(200).json({
-                message: "User deleted successfully"
-            });
+            const data: DeleteResult = await this.userService.deleteUser(id);
+            if(!data.affected){
+                return this.httpResponse.NotFound(res, "Error deleting user");
+            }
+            return this.httpResponse.Ok(res, data);
         } catch (error) {
             console.error("Error deleting user:", error);
-            res.status(500).json({
-                message: "Error deleting user"
-            });
+            return this.httpResponse.InternalServerError(res, "Error retrieving user");
         }
     }
 }
