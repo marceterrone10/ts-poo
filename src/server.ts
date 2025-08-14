@@ -6,6 +6,8 @@ import { UserRouter } from './user/user.router';
 import { ConfigServer } from './config/config';
 import { ProductRouter } from './products/product.router';
 import { DataSource } from 'typeorm';
+import { PurchaseRouter } from "./purchase/purchase.router";
+import { PurchaseProductRouter } from "./purchase/purchase-product.router";
 
 
 class ServerBootstrap extends ConfigServer{
@@ -28,7 +30,9 @@ class ServerBootstrap extends ConfigServer{
     routers(): Array<express.Router>{
         return [
             new UserRouter().router,
-            new ProductRouter().router
+            new ProductRouter().router,
+            new PurchaseRouter().router,
+            new PurchaseProductRouter().router
         ];
     };
 
