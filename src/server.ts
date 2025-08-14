@@ -1,8 +1,11 @@
+import "reflect-metadata";
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { UserRouter } from './user/user.router';
 import { ConfigServer } from './config/config';
+import { ProductRouter } from './products/product.router';
+import { DataSource } from 'typeorm';
 
 
 class ServerBootstrap extends ConfigServer{
@@ -18,15 +21,24 @@ class ServerBootstrap extends ConfigServer{
         this.app.use(cors());
 
         this.dbConnect();
-
         this.app.use('/api', this.routers());
         this.listen();
     }
 
     routers(): Array<express.Router>{
-        return [new UserRouter().router];
+        return [
+            new UserRouter().router,
+            new ProductRouter().router
+        ];
     };
 
+    async dbConnect(): Promise<DataSource | void>{
+        return this.initConnect.then(() => {
+            console.log('Database connected');
+        }).catch((error) => {
+            console.error('Error connecting to the database', error);
+        });
+    };
 
     public listen() { // para llamar a variables dentro de una clase usamos this
         this.app.listen(this.port, () => {
