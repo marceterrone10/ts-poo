@@ -18,6 +18,13 @@ export class UserService extends BaseService<UserEntity> {
         return repo.findOneBy({ id });
     }
 
+    async findUserWithRelation(id: string): Promise<UserEntity | null> {
+        return (await this.execRepository).createQueryBuilder('user')
+        .leftJoinAndSelect('user.customer','customer')
+        .where({ id })
+        .getOne()
+    };
+
     async createUser(body: UserDTO): Promise<UserEntity> {
         const repo = await this.execRepository;
         const user = await repo.save(body as any);
