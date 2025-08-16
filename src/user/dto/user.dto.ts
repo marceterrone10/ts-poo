@@ -22,6 +22,8 @@ export class UserDTO extends BaseDTO {
     @IsNotEmpty()
     province!: number;
     
+    @IsNotEmpty()
+    role!: RoleType;
 }
 
 export enum RoleType {

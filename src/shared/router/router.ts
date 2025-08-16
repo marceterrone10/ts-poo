@@ -1,13 +1,15 @@
 import { Router } from 'express';
 
 
-export class BaseRouter<T> { 
-    public router: Router
+export class BaseRouter<T, U> { 
+    public router: Router;
     public controller: T;
+    public middleware: U;
 
-    constructor(TController: { new(): T}){ // Al constructor le vamos a pasar un controlador generico de la clase que extienda de BaseController en nuestro ejemplo es de Users, pero podria ser de cualquier otra cosa
+    constructor(TController: { new(): T}, UMiddleware: { new(): U }) { // Al constructor le vamos a pasar un controlador generico de la clase que extienda de BaseController en nuestro ejemplo es de Users, pero podria ser de cualquier otra cosa
         this.router = Router()
         this.controller = new TController();
+        this.middleware = new UMiddleware();
         this.routes();
     }
 

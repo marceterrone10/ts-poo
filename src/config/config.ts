@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import AppDataSource from './data.source';
 
 export abstract class ConfigServer {
-    private static dataSource: DataSource; // 🔹 singleton
+    private static dataSource: DataSource; // singleton
 
     constructor() {
         const nodeNameEnv = this.createPathEnv(this.nodeEnv);
