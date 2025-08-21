@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { UserDTO } from "../dto/user.dto";
-import { validate } from "class-validator";
 import { HttpResponse } from "../../shared/response/http.response";
+import { UserSchema } from "../schema/user.schema";
 
+/*
 export class UserMiddleware {
     constructor(private readonly httpResponse: HttpResponse = new HttpResponse()) {}
     userValidator(req: Request, res: Response, next: NextFunction) {
@@ -27,4 +27,15 @@ export class UserMiddleware {
             };
         });
     };
+};*/
+
+export class UserMiddleware {
+    constructor(private readonly httpResponse: HttpResponse = new HttpResponse()) {}
+    validateUser(req: Request, res: Response, next: NextFunction){
+        const parsed = UserSchema.safeParse(req.body);
+        if (!parsed.success) {
+            return this.httpResponse.BadRequest(res, parsed.error);
+        }
+        next();
+    }
 };

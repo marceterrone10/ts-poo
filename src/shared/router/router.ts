@@ -13,7 +13,7 @@ export class BaseRouter<T, U> {
         this.routes();
     }
 
-    routes(){}
+    routes(): void {}
 }
 
 /*
